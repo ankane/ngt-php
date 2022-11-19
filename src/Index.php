@@ -108,9 +108,7 @@ class Index
         $obj = $this->ffi->new('float[' . ($this->dimensions * $count) . ']');
         $i = 0;
         foreach ($objects as $object) {
-            if (count($object) != $this->dimensions) {
-                throw new \InvalidArgumentException('Bad dimensions');
-            }
+            $this->checkDimensions(count($object));
 
             foreach ($object as $v) {
                 $obj[$i] = $v;
@@ -197,14 +195,19 @@ class Index
     private function cObject($object)
     {
         $count = count($object);
-        if ($count != $this->dimensions) {
-            throw new \InvalidArgumentException('Bad dimensions');
-        }
+        $this->checkDimensions($count);
         $cObject = $this->ffi->new("double[$count]");
         for ($i = 0; $i < $count; $i++) {
             $cObject[$i] = $object[$i];
         }
         return $cObject;
+    }
+
+    private function checkDimensions($d)
+    {
+        if ($d != $this->dimensions) {
+            throw new \InvalidArgumentException('Bad dimensions');
+        }
     }
 
     private function call($func, ...$args)
