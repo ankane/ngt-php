@@ -4,13 +4,12 @@ namespace Ngt;
 
 class Index
 {
-    // TODO make private in 0.2.0
-    public $ffi;
-    public $error;
-    public $property;
-    public $index;
-    public $dimensions;
-    public $objectType;
+    private $ffi;
+    private $error;
+    private $property;
+    private $index;
+    private $dimensions;
+    private $objectType;
 
     public function __construct(
         $dimensions,
