@@ -2,7 +2,7 @@
 
 [NGT](https://github.com/yahoojapan/NGT) - high-speed approximate nearest neighbors - for PHP
 
-[![Build Status](https://github.com/ankane/ngt-php/workflows/build/badge.svg?branch=master)](https://github.com/ankane/ngt-php/actions)
+[![Build Status](https://github.com/ankane/ngt-php/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/ngt-php/actions)
 
 ## Installation
 
