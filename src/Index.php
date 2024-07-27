@@ -169,8 +169,8 @@ class Index
     public function search($query, $size = 20, $epsilon = 0.1, $radius = null)
     {
         $radius ??= -1.0;
+        $results = $this->call($this->ffi->ngt_create_empty_results);
         try {
-            $results = $this->call($this->ffi->ngt_create_empty_results);
             $this->call($this->ffi->ngt_search_index, $this->index, $this->cObject($query), count($query), $size, $epsilon, $radius, $results);
             $resultSize = $this->call($this->ffi->ngt_get_result_size, $results);
             $ret = [];
