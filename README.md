@@ -12,10 +12,19 @@ Run:
 composer require ankane/ngt
 ```
 
-And download the shared library:
+Add scripts to `composer.json` to download the shared library:
+
+```json
+    "scripts": {
+        "post-install-cmd": "Ngt\\Vendor::check",
+        "post-update-cmd": "Ngt\\Vendor::check"
+    }
+```
+
+And run:
 
 ```sh
-composer exec -- php -r "require 'vendor/autoload.php'; Ngt\Vendor::check();"
+composer install
 ```
 
 On Mac, also install OpenMP:
