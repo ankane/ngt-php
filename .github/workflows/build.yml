@@ -9,5 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - if: ${{ startsWith(matrix.os, 'macos') }}
+        run: brew install composer
       - run: composer install
       - run: composer test
