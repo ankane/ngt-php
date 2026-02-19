@@ -1,3 +1,7 @@
+## 0.2.1 (unreleased)
+
+- Fixed memory leak when `Index` constructor throws exception
+
 ## 0.2.0 (2024-06-02)
 
 - Changed `DistanceType` and `ObjectType` to enums
