@@ -21,26 +21,27 @@ class Index
     ) {
         $this->ffi = FFI::instance();
 
-        $this->error = $this->ffi->ngt_create_error_object();
-        $this->property = $this->call($this->ffi->ngt_create_property);
+        $this->error = new Pointer($this->ffi->ngt_create_error_object(), $this->ffi->ngt_destroy_error_object);
+        $this->property = new Pointer($this->call($this->ffi->ngt_create_property), $this->ffi->ngt_destroy_property);
+        $property = $this->property->ptr;
 
         if ($path && is_null($dimensions)) {
-            $this->index = $this->call($this->ffi->ngt_open_index, $path);
-            $this->call($this->ffi->ngt_get_property, $this->index, $this->property);
+            $this->index = new Pointer($this->call($this->ffi->ngt_open_index, $path), $this->ffi->ngt_close_index);
+            $this->call($this->ffi->ngt_get_property, $this->index->ptr, $property);
         } else {
-            $this->call($this->ffi->ngt_set_property_dimension, $this->property, $dimensions);
-            $this->call($this->ffi->ngt_set_property_edge_size_for_creation, $this->property, $edgeSizeForCreation);
-            $this->call($this->ffi->ngt_set_property_edge_size_for_search, $this->property, $edgeSizeForSearch);
+            $this->call($this->ffi->ngt_set_property_dimension, $property, $dimensions);
+            $this->call($this->ffi->ngt_set_property_edge_size_for_creation, $property, $edgeSizeForCreation);
+            $this->call($this->ffi->ngt_set_property_edge_size_for_search, $property, $edgeSizeForSearch);
 
             switch ($objectType) {
                 case ObjectType::Float:
-                    $this->call($this->ffi->ngt_set_property_object_type_float, $this->property);
+                    $this->call($this->ffi->ngt_set_property_object_type_float, $property);
                     break;
                 case ObjectType::Float16:
-                    $this->call($this->ffi->ngt_set_property_object_type_float16, $this->property);
+                    $this->call($this->ffi->ngt_set_property_object_type_float16, $property);
                     break;
                 case ObjectType::Integer:
-                    $this->call($this->ffi->ngt_set_property_object_type_integer, $this->property);
+                    $this->call($this->ffi->ngt_set_property_object_type_integer, $property);
                     break;
                 default:
                     throw new \InvalidArgumentException('Unknown object type');
@@ -48,39 +49,39 @@ class Index
 
             switch ($distanceType) {
                 case DistanceType::L1:
-                    $this->call($this->ffi->ngt_set_property_distance_type_l1, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_l1, $property);
                     break;
                 case DistanceType::L2:
-                    $this->call($this->ffi->ngt_set_property_distance_type_l2, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_l2, $property);
                     break;
                 case DistanceType::Angle:
-                    $this->call($this->ffi->ngt_set_property_distance_type_angle, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_angle, $property);
                     break;
                 case DistanceType::Hamming:
-                    $this->call($this->ffi->ngt_set_property_distance_type_hamming, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_hamming, $property);
                     break;
                 case DistanceType::Jaccard:
-                    $this->call($this->ffi->ngt_set_property_distance_type_jaccard, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_jaccard, $property);
                     break;
                 case DistanceType::Cosine:
-                    $this->call($this->ffi->ngt_set_property_distance_type_cosine, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_cosine, $property);
                     break;
                 case DistanceType::NormalizedAngle:
-                    $this->call($this->ffi->ngt_set_property_distance_type_normalized_angle, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_normalized_angle, $property);
                     break;
                 case DistanceType::NormalizedCosine:
-                    $this->call($this->ffi->ngt_set_property_distance_type_normalized_cosine, $this->property);
+                    $this->call($this->ffi->ngt_set_property_distance_type_normalized_cosine, $property);
                     break;
                 default:
                     throw new \InvalidArgumentException('Unknown distance type');
             }
 
-            $this->index = $this->call($this->ffi->ngt_create_graph_and_tree_in_memory, $this->property);
+            $this->index = new Pointer($this->call($this->ffi->ngt_create_graph_and_tree_in_memory, $property), $this->ffi->ngt_close_index);
         }
 
-        $this->dimensions = $this->call($this->ffi->ngt_get_property_dimension, $this->property);
+        $this->dimensions = $this->call($this->ffi->ngt_get_property_dimension, $property);
 
-        $objectType = $this->call($this->ffi->ngt_get_property_object_type, $this->property);
+        $objectType = $this->call($this->ffi->ngt_get_property_object_type, $property);
         if ($this->ffi->ngt_is_property_object_type_float($objectType)) {
             $this->objectType = ObjectType::Float;
         } elseif ($this->ffi->ngt_is_property_object_type_float16($objectType)) {
@@ -92,16 +93,9 @@ class Index
         }
     }
 
-    public function __destruct()
-    {
-        $this->ffi->ngt_destroy_error_object($this->error);
-        $this->ffi->ngt_close_index($this->index);
-        $this->ffi->ngt_destroy_property($this->property);
-    }
-
     public function insert($object)
     {
-        return $this->call($this->ffi->ngt_insert_index, $this->index, $this->cObject($object), count($object));
+        return $this->call($this->ffi->ngt_insert_index, $this->index->ptr, $this->cObject($object), count($object));
     }
 
     // TODO add option to not build index
@@ -124,7 +118,7 @@ class Index
         }
 
         $ids = $this->ffi->new("uint32_t[$count]");
-        $this->call($this->ffi->ngt_batch_insert_index, $this->index, $obj, $count, $ids);
+        $this->call($this->ffi->ngt_batch_insert_index, $this->index->ptr, $obj, $count, $ids);
 
         $this->buildIndex(numThreads: $numThreads);
 
@@ -137,7 +131,7 @@ class Index
 
     public function object($id)
     {
-        $objectSpace = $this->call($this->ffi->ngt_get_object_space, $this->index);
+        $objectSpace = $this->call($this->ffi->ngt_get_object_space, $this->index->ptr);
         if ($this->objectType == ObjectType::Integer) {
             $res = $this->call($this->ffi->ngt_get_object_as_integer, $objectSpace, $id);
         } elseif ($this->objectType == ObjectType::Float) {
@@ -155,7 +149,7 @@ class Index
     public function remove($id)
     {
         try {
-            return $this->call($this->ffi->ngt_remove_index, $this->index, $id);
+            return $this->call($this->ffi->ngt_remove_index, $this->index->ptr, $id);
         } catch (Exception $e) {
             return false;
         }
@@ -163,35 +157,31 @@ class Index
 
     public function buildIndex($numThreads = 8)
     {
-        return $this->call($this->ffi->ngt_create_index, $this->index, $numThreads);
+        return $this->call($this->ffi->ngt_create_index, $this->index->ptr, $numThreads);
     }
 
     public function search($query, $size = 20, $epsilon = 0.1, $radius = null)
     {
         $radius ??= -1.0;
-        $results = $this->call($this->ffi->ngt_create_empty_results);
-        try {
-            $this->call($this->ffi->ngt_search_index, $this->index, $this->cObject($query), count($query), $size, $epsilon, $radius, $results);
-            $resultSize = $this->call($this->ffi->ngt_get_result_size, $results);
-            $ret = [];
-            for ($i = 0; $i < $resultSize; $i++) {
-                $res = $this->call($this->ffi->ngt_get_result, $results, $i);
-                $ret[] = ['id' => $res->id, 'distance' => $res->distance];
-            }
-            return $ret;
-        } finally {
-            $this->ffi->ngt_destroy_results($results);
+        $results = new Pointer($this->call($this->ffi->ngt_create_empty_results), $this->ffi->ngt_destroy_results);
+        $this->call($this->ffi->ngt_search_index, $this->index->ptr, $this->cObject($query), count($query), $size, $epsilon, $radius, $results->ptr);
+        $resultSize = $this->call($this->ffi->ngt_get_result_size, $results->ptr);
+        $ret = [];
+        for ($i = 0; $i < $resultSize; $i++) {
+            $res = $this->call($this->ffi->ngt_get_result, $results->ptr, $i);
+            $ret[] = ['id' => $res->id, 'distance' => $res->distance];
         }
+        return $ret;
     }
 
     public function save($path)
     {
-        return $this->call($this->ffi->ngt_save_index, $this->index, $path);
+        return $this->call($this->ffi->ngt_save_index, $this->index->ptr, $path);
     }
 
     public function close()
     {
-        $this->ffi->ngt_close_index($this->index);
+        $this->ffi->ngt_close_index($this->index->ptr);
     }
 
     public static function load($path)
@@ -219,11 +209,12 @@ class Index
 
     private function call($func, ...$args)
     {
-        $args[] = $this->error;
+        $error = $this->error->ptr;
+        $args[] = $error;
         $res = $func(...$args);
-        $message = $this->ffi->ngt_get_error_string($this->error);
+        $message = $this->ffi->ngt_get_error_string($error);
         if ($message) {
-            $this->ffi->ngt_clear_error_string($this->error);
+            $this->ffi->ngt_clear_error_string($error);
             throw new Exception($message);
         }
         return $res;
