@@ -1,4 +1,4 @@
-## 0.3.0 (unreleased)
+## 0.3.0 (2026-02-27)
 
 - Updated NGT to 2.6.0
 - Fixed memory leak when `Index` constructor throws exception
