@@ -4,27 +4,27 @@ namespace Ngt;
 
 class Vendor
 {
-    public const VERSION = '1.14.6';
+    public const VERSION = '2.2.4';
 
     public const PLATFORMS = [
         'x86_64-linux' => [
             'file' => 'ngt-{{version}}-x86_64-linux',
-            'checksum' => '91f42b6b9e2362f9aa43bdc1a3052a8dc8a762af4d4111cdd5b2eebb533a4b16',
+            'checksum' => 'f670bb79bba222679da90d9247ae4ec5d4c40654af52d0a6cdc8b57f71315ccd',
             'lib' => 'libngt.so'
         ],
         'aarch64-linux' => [
             'file' => 'ngt-{{version}}-aarch64-linux',
-            'checksum' => '61d110674e665246b64a6af26416bb455a6a0b51969a159b942d469e101e2e58',
+            'checksum' => '25e0462ffbaf77a349571a2b5fb5eabf30c383c0edc38cd7dda96e590a0a1e1b',
             'lib' => 'libngt.so'
         ],
         'x86_64-darwin' => [
             'file' => 'ngt-{{version}}-x86_64-darwin',
-            'checksum' => 'd5bdbb3d0d2bb2677d97de831ccd6026e5aa26e5d1397246df7ee0a79f66ddf6',
+            'checksum' => '1537aacc16d6ba39567713f1e875817c76293175e8f084f67e476ca311a48c2c',
             'lib' => 'libngt.dylib'
         ],
         'arm64-darwin' => [
             'file' => 'ngt-{{version}}-aarch64-darwin',
-            'checksum' => '80bec42f3779590dd03f14015d916d69bae1d825d494f60886f90990da53bc85',
+            'checksum' => '3cb717bca24d8d1707952595b7daa7c1259022eb060dfe5ded02a6ed0cc93cc5',
             'lib' => 'libngt.dylib'
         ]
     ];
