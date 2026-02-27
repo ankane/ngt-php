@@ -2,6 +2,7 @@
 
 - Updated NGT to 2.2.4
 - Fixed memory leak when `Index` constructor throws exception
+- Dropped support for PHP < 8.2
 
 ## 0.2.0 (2024-06-02)
 
